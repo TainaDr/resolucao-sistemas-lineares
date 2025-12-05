@@ -1,0 +1,89 @@
+import numpy as np
+
+
+def validar_matriz(A, tol=1e-12):
+    if A.shape[0] != A.shape[1]:
+        raise ValueError('A matriz precisa ser quadrada.')
+    for i in range(1, A.shape[0] + 1):
+        minor = np.linalg.det(A[:i, :i])
+        if abs(minor) < tol:
+            raise ValueError(f'O menor principal de ordem {i} e nulo (determinante ~ {minor:.2e}).')
+    return True
+
+
+def lu_decomposicao(A):
+    n = len(A)
+    L = np.eye(n)
+    U = np.zeros((n, n))
+
+    for i in range(n):
+        for j in range(i, n):
+            U[i, j] = A[i, j] - sum(L[i, k] * U[k, j] for k in range(i))
+        for j in range(i + 1, n):
+            L[j, i] = (A[j, i] - sum(L[j, k] * U[k, i] for k in range(i))) / U[i, i]
+    return L, U
+
+
+def substituicao_progressiva(L, b):
+    n = len(b)
+    y = np.zeros(n)
+    for i in range(n):
+        soma = sum(L[i][j] * y[j] for j in range(i))
+        y[i] = (b[i] - soma) / L[i][i]
+    return y
+
+
+def substituicao_regressiva(U, y):
+    n = len(y)
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        soma = sum(U[i][j] * x[j] for j in range(i + 1, n))
+        x[i] = (y[i] - soma) / U[i][i]
+    return x
+
+
+# Dados do problema das molas
+k1 = 100
+k2 = 50
+k3 = 80
+k4 = 70
+
+A = np.array([
+    [k1 + k2,   -k2,       0       ],
+    [  -k2,   k2 + k3,    -k3     ],
+    [    0,     -k3,    k3 + k4   ]
+], dtype=float)
+
+b = np.array([500.0, 0.0, 0.0])
+
+# Execução do método Fatoração LU
+
+print('1. Matriz de rigidez A:')
+print(A)
+
+validar_matriz(A)
+
+L, U = lu_decomposicao(A)
+print()
+print('2. Matrizes L e U (LU Doolittle):')
+print('L =')
+print(np.round(L, 2))
+print()
+print('U =')
+print(np.round(U, 2))
+
+y = substituicao_progressiva(L, b)
+print()
+print('3. Vetor y (L y = b):')
+print(np.round(y, 2))
+
+x = substituicao_regressiva(U, y)
+print()
+print('4. Deslocamentos x (solucao final):')
+print(np.round(x, 2))
+
+#Verificação
+print()
+print('Verificacao A*x:')
+print(np.dot(A, x))
+print('Vetor b:', np.round(b, 2))
