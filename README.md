@@ -19,8 +19,6 @@ O notebook **cholesky.ipynb** inclui:
 * Dedução da decomposição ( A = LL^T )
 * Implementação passo a passo do algoritmo
 * Aplicação da decomposição para resolver ( Ax = b )
-* Verificação de estabilidade e tempo de execução
-* Comparação com `numpy.linalg.cholesky`
 
 ### 2. Fatoração LU
 
@@ -30,8 +28,6 @@ O notebook **fatoracao_lu.ipynb** inclui:
 * Derivação matricial
 * Implementação manual das matrizes **L** e **U**
 * Resolução do sistema usando substituição direta e retroativa
-* Comparação com `scipy.linalg.lu`
-* Demonstração de casos onde pivotamento é necessário
 
 ---
 
